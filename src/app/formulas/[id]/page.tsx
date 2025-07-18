@@ -120,47 +120,56 @@ export default function FormulaDetailPage() {
                     <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary tracking-tight">
                         {formula.title[language]}
                     </h1>
-                    <p className="text-lg text-muted-foreground">
-                        {formula.shortDescription[language]}
-                    </p>
+                    {/* Short Description - smaller font, muted color */}
+                    <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
+                      {formula.shortDescription[language]?.split('\n').map((desc, idx) => (
+                        <li key={idx}>{desc}</li>
+                      ))}
+                    </ul>
                 </div>
                 
-                 {/* Long Description */}
-                <div className="prose prose-lg dark:prose-invert max-w-none">
-                  {(Array.isArray(formula.longDescription?.[language]) ? formula.longDescription[language] : []).map((paragraph, index) => (
-                      <p key={index}>{paragraph}</p>
-                  ))}
+                 {/* Long Description - Improved as paragraphs */}
+                {/* Long Description - larger font, visually appealing card */}
+                <div className="bg-background rounded-lg border p-6 mb-4">
+                  <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Description</h2>
+                  <div className="space-y-4 text-base text-foreground">
+                    {(Array.isArray(formula.longDescription?.[language]) ? formula.longDescription[language] : []).map((paragraph, index) => (
+                        <p key={index} className="mb-2 leading-relaxed">{paragraph}</p>
+                    ))}
+                  </div>
                 </div>
                 
                 <Separator/>
 
-                {/* Syntax & Breakdown */}
+                {/* Syntax & Breakdown - Improved UI */}
                 <div>
                   <h2 className="text-3xl font-bold font-headline mb-4">Syntax</h2>
                   <Card>
                     <CardContent className="pt-6">
-                       <pre className="bg-muted p-4 rounded-md overflow-x-auto">
+                       <pre className="bg-muted p-4 rounded-md overflow-x-auto mb-6">
                           <code className="font-code text-base text-foreground">
                           {formula.syntax}
                           </code>
                       </pre>
                       {(formula.syntaxBreakdown?.[language]?.length ?? 0) > 0 && (
-                        <>
-                          <h3 className="text-xl font-bold font-headline my-4">Breakdown</h3>
-                          <ul className="space-y-3">
-                            {(Array.isArray(formula.syntaxBreakdown?.[language]) ? formula.syntaxBreakdown[language] : []).map((item, index) => {
-                                const parts = item.split(':');
-                                const argument = parts[0];
-                                const description = parts.slice(1).join(':');
-                                return (
-                                    <li key={index} className="flex">
-                                        <code className="font-code text-sm font-semibold w-36 shrink-0">{argument}</code>
-                                        <p className="text-sm text-muted-foreground">{description}</p>
-                                    </li>
-                                )
-                            })}
-                          </ul>
-                        </>
+                        <div className="bg-background rounded-lg border p-4">
+                          <h3 className="text-xl font-bold font-headline mb-4">Breakdown</h3>
+                          <table className="w-full text-sm border rounded overflow-hidden">
+                            <tbody>
+                              {(Array.isArray(formula.syntaxBreakdown?.[language]) ? formula.syntaxBreakdown[language] : []).map((item, index) => {
+                                  const parts = item.split(':');
+                                  const argument = parts[0];
+                                  const description = parts.slice(1).join(':');
+                                  return (
+                                    <tr key={index} className="border-b last:border-b-0">
+                                      <td className="px-3 py-2 font-code font-semibold w-44 text-primary align-top">{argument}</td>
+                                      <td className="px-3 py-2 text-muted-foreground">{description}</td>
+                                    </tr>
+                                  )
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
                       )}
                     </CardContent>
                   </Card>
@@ -168,21 +177,29 @@ export default function FormulaDetailPage() {
 
                 <Separator/>
 
-                {/* Examples */}
+                {/* Examples - Improved UI */}
                 <div>
                    <h2 className="text-3xl font-bold font-headline mb-4">Examples</h2>
                     <Card>
                       <CardContent className="pt-6 space-y-8">
                         {(formula.examples || []).map((example, index) => (
-                          <div key={index}>
+                          <div key={index} className="bg-background rounded-lg border p-6">
                             <h3 className="text-xl font-bold font-headline mb-4">Example {index + 1}</h3>
-                            <pre className="bg-muted p-4 rounded-md overflow-x-auto">
+                            <pre className="bg-muted p-4 rounded-md overflow-x-auto mb-4">
                                 <code className="font-code text-base text-foreground">
                                 {example.code}
                                 </code>
                             </pre>
-                            <p className="mt-4 text-muted-foreground">{example.explanation[language]}</p>
-                            
+                            {/* Explanation as paragraphs or bullet list if multiline */}
+                            {example.explanation[language]?.includes('\n') ? (
+                              <ul className="list-disc pl-5 text-muted-foreground space-y-1">
+                                {example.explanation[language].split('\n').map((desc, idx) => (
+                                  <li key={idx}>{desc}</li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="mt-4 text-muted-foreground">{example.explanation[language]}</p>
+                            )}
                             {example.imageUrl && (
                               <div className="mt-6">
                                   <h4 className="text-lg font-semibold font-headline mb-2">Visual Explanation</h4>

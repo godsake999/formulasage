@@ -47,7 +47,7 @@ export default function AdminPage() {
   const [selectedFormula, setSelectedFormula] = useState<Formula | null>(null);
   const [formulaFormData, setFormulaFormData] = useState<Omit<Formula, 'created_at'>>(JSON.parse(JSON.stringify(initialFormulaState)));
   const [isEditing, setIsEditing] = useState(false);
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState('');
   
   const router = useRouter();
   const { language, setLanguage } = useContext(LanguageContext);
@@ -103,10 +103,12 @@ export default function AdminPage() {
         }
         
         const lastPart = nameParts[nameParts.length - 1];
-        const secondLastPart = nameParts[nameParts.length - 2];
+        const secondLastPart = nameParts.length > 1 ? nameParts[nameParts.length - 2] : null;
         
-        if (['longDescription', 'syntaxBreakdown'].includes(secondLastPart)) {
-            current[lastPart] = value.split('\n');
+        if (secondLastPart && ['longDescription', 'syntaxBreakdown'].includes(secondLastPart)) {
+             // Ensure the target is an array before splitting
+             const parent = nameParts.slice(0, -1).reduce((obj, key) => obj[key], newState);
+             parent[lastPart] = value.split('\n');
         } else {
             current[lastPart] = value;
         }
@@ -250,7 +252,7 @@ export default function AdminPage() {
   if (authLoading || formulasLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <Loader size={32} strokeWidth={2} className="animate-spin" />
+        <Loader className="h-8 w-8 animate-spin" />
       </div>
     );
   }
@@ -260,7 +262,7 @@ export default function AdminPage() {
        <div className="container mx-auto px-4 md:px-6 py-8 text-center h-[calc(100vh-80px)] flex items-center justify-center">
             <Card className="max-w-md mx-auto">
                 <CardHeader>
-                    <CardTitle className="flex items-center justify-center gap-2"><Lock size={20} /> {pageContent.admin.loginRequired}</CardTitle>
+                    <CardTitle className="flex items-center justify-center gap-2"><Lock /> {pageContent.admin.loginRequired}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <p>{pageContent.admin.loginPrompt}</p>
@@ -312,7 +314,7 @@ export default function AdminPage() {
                       placeholder="Search functions..." 
                       className="pl-9"
                       value={searchTerm}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                      onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
             </CardHeader>
@@ -331,7 +333,7 @@ export default function AdminPage() {
             {!selectedFormula && !isEditing && (
                 <Card className="flex items-center justify-center h-96">
                     <CardContent className="text-center text-muted-foreground pt-6">
-                        <FileText size={48} className="mx-auto mb-4" />
+                        <FileText className="h-12 w-12 mx-auto mb-4" />
                         <p>Select a formula to edit or create a new one.</p>
                     </CardContent>
                 </Card>
@@ -344,21 +346,21 @@ export default function AdminPage() {
                       <div className="flex justify-between items-center">
                           <div>
                             <CardTitle className="text-xl font-headline flex items-center gap-3">
-                              <FileText size={20} className="text-primary"/> 
-                              {isEditing ? `Edit: ${formulaFormData.title.en}` : 'Create New Formula'}
+                              <FileText className="text-primary"/> 
+                              {isEditing ? `Edit: ${formulaFormData?.title?.en || ''}` : 'Create New Formula'}
                             </CardTitle>
                             <CardDescription>
-                              {isEditing ? `ID: ${formulaFormData.id}` : `Fill out the details for the new formula.`}
+                              {isEditing ? `ID: ${formulaFormData?.id || ''}` : `Fill out the details for the new formula.`}
                             </CardDescription>
                           </div>
                           <div className="flex items-center gap-2">
                               {isEditing && (
                                 <Button type="button" variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={handleDelete}>
-                                    <Trash2 size={16} className="mr-2"/> Delete
+                                    <Trash2 className="h-4 w-4 mr-2"/> Delete
                                 </Button>
                               )}
-                              <Button type="button" variant="outline" size="sm"><Eye size={16} className="mr-2"/> Preview</Button>
-                              <Button type="submit" size="sm"><Save size={16} className="mr-2"/> {isEditing ? 'Save Changes' : 'Create Formula'}</Button>
+                              <Button type="button" variant="outline" size="sm"><Eye className="h-4 w-4 mr-2"/> Preview</Button>
+                              <Button type="submit" size="sm"><Save className="h-4 w-4 mr-2"/> {isEditing ? 'Save Changes' : 'Create Formula'}</Button>
                           </div>
                       </div>
                       <div className="flex justify-end items-center pt-2">
@@ -371,9 +373,9 @@ export default function AdminPage() {
                   <CardContent>
                     <Tabs defaultValue="basic">
                         <TabsList>
-                            <TabsTrigger value="basic"><Settings size={16} className="mr-2"/>Basic Info</TabsTrigger>
-                            <TabsTrigger value="content"><FileText size={16} className="mr-2"/>Content</TabsTrigger>
-                            <TabsTrigger value="example"><Code size={16} className="mr-2"/>Examples</TabsTrigger>
+                            <TabsTrigger value="basic"><Settings className="h-4 w-4 mr-2"/>Basic Info</TabsTrigger>
+                            <TabsTrigger value="content"><FileText className="h-4 w-4 mr-2"/>Content</TabsTrigger>
+                            <TabsTrigger value="example"><Code className="h-4 w-4 mr-2"/>Examples</TabsTrigger>
                         </TabsList>
                         
                         <div className="pt-6">
@@ -381,23 +383,23 @@ export default function AdminPage() {
                             <TabsContent value="basic" className="grid grid-cols-1 md:grid-cols-2 gap-6 m-0">
                                 <div className="space-y-2">
                                     <Label htmlFor="title.en">{pageContent.admin.titleEnLabel}</Label>
-                                    <Input id="title.en" name="title.en" value={formulaFormData.title.en} onChange={handleChange} required />
+                                    <Input id="title.en" name="title.en" value={formulaFormData?.title?.en || ''} onChange={handleChange} required />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="title.my">{pageContent.admin.titleMyLabel}</Label>
-                                    <Input id="title.my" name="title.my" value={formulaFormData.title.my} onChange={handleChange} required />
+                                    <Input id="title.my" name="title.my" value={formulaFormData?.title?.my || ''} onChange={handleChange} required />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="category.en">{pageContent.admin.categoryEnLabel}</Label>
-                                    <Input id="category.en" name="category.en" value={formulaFormData.category.en} onChange={handleChange} required />
+                                    <Input id="category.en" name="category.en" value={formulaFormData?.category?.en || ''} onChange={handleChange} required />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="category.my">{pageContent.admin.categoryMyLabel}</Label>
-                                    <Input id="category.my" name="category.my" value={formulaFormData.category.my} onChange={handleChange} required />
+                                    <Input id="category.my" name="category.my" value={formulaFormData?.category?.my || ''} onChange={handleChange} required />
                                 </div>
                                 <div className="space-y-2">
                                     <Label>{pageContent.admin.difficultyLabel}</Label>
-                                    <Select onValueChange={handleDifficultyChange} value={formulaFormData.difficulty?.en || 'Beginner'}>
+                                    <Select onValueChange={handleDifficultyChange} value={formulaFormData?.difficulty?.en || 'Beginner'}>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select difficulty" />
                                         </SelectTrigger>
@@ -409,7 +411,7 @@ export default function AdminPage() {
                                     </Select>
                                 </div>
                                 <div className="flex items-center space-x-2 pt-6">
-                                    <Switch id="is-new" checked={formulaFormData.isNew} onCheckedChange={(checked) => setFormulaFormData(prev => ({ ...prev, isNew: checked }))} />
+                                    <Switch id="is-new" checked={formulaFormData?.isNew || false} onCheckedChange={(checked) => setFormulaFormData(prev => ({ ...prev, isNew: checked }))} />
                                     <Label htmlFor="is-new">{pageContent.admin.isNewLabel}</Label>
                                 </div>
                             </TabsContent>
@@ -418,23 +420,23 @@ export default function AdminPage() {
                             <TabsContent value="content" className="grid grid-cols-1 md:grid-cols-2 gap-6 m-0">
                                 <div className="md:col-span-2 space-y-2">
                                     <Label htmlFor="syntax">{pageContent.admin.syntaxLabel}</Label>
-                                    <Input id="syntax" name="syntax" placeholder={pageContent.admin.syntaxPlaceholder} value={formulaFormData.syntax} onChange={handleChange} required className="font-code" />
+                                    <Input id="syntax" name="syntax" placeholder={pageContent.admin.syntaxPlaceholder} value={formulaFormData?.syntax || ''} onChange={handleChange} required className="font-code" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="shortDescription.en">{pageContent.admin.shortDescEnLabel}</Label>
-                                    <Textarea id="shortDescription.en" name="shortDescription.en" value={formulaFormData.shortDescription.en} onChange={handleChange} required />
+                                    <Textarea id="shortDescription.en" name="shortDescription.en" value={formulaFormData?.shortDescription?.en || ''} onChange={handleChange} required />
                                 </div>
                                  <div className="space-y-2">
                                     <Label htmlFor="shortDescription.my">{pageContent.admin.shortDescMyLabel}</Label>
-                                    <Textarea id="shortDescription.my" name="shortDescription.my" value={formulaFormData.shortDescription.my} onChange={handleChange} required />
+                                    <Textarea id="shortDescription.my" name="shortDescription.my" value={formulaFormData?.shortDescription?.my || ''} onChange={handleChange} required />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="longDescription.en">{pageContent.admin.longDescEnLabel}</Label>
-                                    <Textarea id="longDescription.en" name="longDescription.en" value={Array.isArray(formulaFormData.longDescription.en) ? formulaFormData.longDescription.en.join('\n') : ''} onChange={handleChange} rows={5} required />
+                                    <Textarea id="longDescription.en" name="longDescription.en" value={Array.isArray(formulaFormData?.longDescription?.en) ? formulaFormData.longDescription.en.join('\n') : ''} onChange={handleChange} rows={5} required />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="longDescription.my">{pageContent.admin.longDescMyLabel}</Label>
-                                    <Textarea id="longDescription.my" name="longDescription.my" value={Array.isArray(formulaFormData.longDescription.my) ? formulaFormData.longDescription.my.join('\n') : ''} onChange={handleChange} rows={5} required />
+                                    <Textarea id="longDescription.my" name="longDescription.my" value={Array.isArray(formulaFormData?.longDescription?.my) ? formulaFormData.longDescription.my.join('\n') : ''} onChange={handleChange} rows={5} required />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="syntaxBreakdown.en">Syntax Breakdown (English)</Label>
@@ -486,13 +488,13 @@ export default function AdminPage() {
                                                     </div>
                                                     {/* Image upload per example */}
                                                     <div className="space-y-2">
-                                                        <Label htmlFor={`example-image-${index}`} className="flex items-center gap-2"><FileImage size={16} className="text-muted-foreground"/>Visual Explanation (Optional)</Label>
+                                                        <Label htmlFor={`example-image-${index}`} className="flex items-center gap-2"><FileImage className="w-4 h-4 text-muted-foreground"/>Visual Explanation (Optional)</Label>
                                                         <Input id={`example-image-${index}`} type="file" accept="image/*" onChange={(e) => handleExampleFileChange(index, e)}/>
                                                         
                                                         {exampleFiles[index] && (
                                                             <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
                                                                 <span>Preview: {exampleFiles[index]?.name}</span>
-                                                                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => removeExampleImage(index)}><X size={16}/></Button>
+                                                                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => removeExampleImage(index)}><X className="h-4 w-4"/></Button>
                                                             </div>
                                                         )}
 
@@ -507,14 +509,14 @@ export default function AdminPage() {
                                                     </div>
                                                 </div>
                                                 <Button type="button" variant="ghost" size="icon" onClick={() => removeExample(index)} className="mt-6 text-destructive">
-                                                    <Trash2 size={16}/>
+                                                    <Trash2 className="h-4 w-4"/>
                                                 </Button>
                                             </div>
                                         </Card>
                                     ))}
                                 </div>
                                 <Button type="button" variant="outline" size="sm" onClick={addExample}>
-                                    <PlusCircle size={16} className="mr-2"/>
+                                    <PlusCircle className="mr-2 h-4 w-4"/>
                                     Add Example
                                 </Button>
                             </TabsContent>
@@ -537,7 +539,7 @@ function CollapsibleCategory({ category, formulas, selectedFormula, onSelect }: 
         <div>
             <button onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between text-left p-2 rounded-md hover:bg-muted font-semibold">
                 <span>{category}</span>
-                {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </button>
             {isOpen && (
                 <div className="pl-4 mt-1 space-y-1">
@@ -547,7 +549,7 @@ function CollapsibleCategory({ category, formulas, selectedFormula, onSelect }: 
                             onClick={() => onSelect(formula)}
                             className={`w-full text-left p-2 rounded-md text-sm flex items-center gap-2 ${selectedFormula?.id === formula.id ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-muted'}`}
                         >
-                          <FileText size={16} className="flex-shrink-0" />
+                          <FileText className="h-4 w-4 flex-shrink-0" />
                           <span className="truncate">{formula.title.en}</span>
                         </button>
                     ))}
