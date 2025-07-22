@@ -63,6 +63,14 @@ export default {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))',
         },
+        // Professional/minimal dark mode additions
+        darkbg: '#18181b',
+        darkcard: '#23232b',
+        darkborder: '#262626',
+        darkmuted: '#23232b',
+        darkaccent: '#2d3748',
+        darkprimary: '#3b82f6',
+        darktext: '#e5e7eb',
       },
       borderRadius: {
         lg: 'var(--radius)',

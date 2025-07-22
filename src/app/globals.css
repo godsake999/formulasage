@@ -11,8 +11,9 @@
     --card-foreground: 224 71.4% 4.1%;
     --popover: 210 40% 98%;
     --popover-foreground: 224 71.4% 4.1%;
-    --primary: 217 89% 61%; /* #4285F4 */
-    --primary-foreground: 355.7 100% 97.3%;
+    /* Changed primary to a more subtle blue: #5A7CA7 */
+    --primary: 217 28% 50%; /* #5A7CA7 */
+    --primary-foreground: 220 13% 96%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222 47.4% 11.2%;
     --muted: 210 40% 96.1%;
@@ -30,28 +31,37 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+    /* Professional/minimal dark mode palette */
+    --dark-bg: 240 6% 10%;
+    --dark-card: 240 5% 16%;
+    --dark-border: 240 4% 22%;
+    --dark-muted: 240 4% 16%;
+    --dark-accent: 220 7% 22%;
+    /* Changed dark mode primary to match subtle blue */
+    --dark-primary: 217 28% 50%;
+    --dark-text: 220 13% 90%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217 89% 61%; /* #4285F4 */
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 150 81% 33%; /* #0F9D58 */
-    --accent-foreground: 210 40% 98%;
+    --background: var(--dark-bg);
+    --foreground: var(--dark-text);
+    --card: var(--dark-card);
+    --card-foreground: var(--dark-text);
+    --popover: var(--dark-card);
+    --popover-foreground: var(--dark-text);
+    --primary: var(--dark-primary);
+    --primary-foreground: var(--dark-text);
+    --secondary: var(--dark-muted);
+    --secondary-foreground: var(--dark-text);
+    --muted: var(--dark-muted);
+    --muted-foreground: 220 13% 70%;
+    --accent: var(--dark-accent);
+    --accent-foreground: var(--dark-text);
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --destructive-foreground: var(--dark-text);
+    --border: var(--dark-border);
+    --input: var(--dark-border);
+    --ring: 217 28% 50%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
