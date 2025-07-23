@@ -3,7 +3,7 @@
 
 import { useMemo, useContext } from 'react';
 import { notFound, useParams } from 'next/navigation';
-import Image from 'next/image';
+import { ZoomImage } from '@/components/zoom-image';
 import Link from 'next/link';
 
 import { useFormulas } from '@/contexts/formula-context';
@@ -204,7 +204,7 @@ export default function FormulaDetailPage() {
                               <div className="mt-6">
                                   <h4 className="text-lg font-semibold font-headline mb-2">Visual Explanation</h4>
                                   <div className="aspect-video bg-muted relative border rounded-lg overflow-hidden">
-                                    <Image
+                                    <ZoomImage
                                         src={example.imageUrl}
                                         alt={`Visual explanation for example ${index + 1} of ${formula.title['en']}`}
                                         fill

@@ -23,12 +23,12 @@ interface FormulaCardProps {
 }
 
 const difficultyStyles: { [key: string]: string } = {
-  Beginner: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-700',
-  Intermediate: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-700',
-  Advanced: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-700',
-  'လွယ်ကူသော': 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-700',
-  'အလယ်အလတ်': 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-700',
-  'ခက်ခဲသော': 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-700',
+  Beginner: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-800/30 dark:text-green-200 dark:border-green-600',
+  Intermediate: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-800/20 dark:text-yellow-200 dark:border-yellow-600',
+  Advanced: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-800/20 dark:text-red-200 dark:border-red-600',
+  'လွယ်ကူသော': 'bg-green-100 text-green-800 border-green-200 dark:bg-green-800/30 dark:text-green-200 dark:border-green-600',
+  'အလယ်အလတ်': 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-800/20 dark:text-yellow-200 dark:border-yellow-600',
+  'ခက်ခဲသော': 'bg-red-100 text-red-800 border-red-200 dark:bg-red-800/20 dark:text-red-200 dark:border-red-600',
 };
 
 const getDifficultyIcon = (difficulty: string) => {
