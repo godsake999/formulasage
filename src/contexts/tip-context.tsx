@@ -12,6 +12,7 @@ const fromSupabase = (row: any): Tip => {
     if (!row) return {} as Tip;
     return {
         id: row.id,
+        examples: row.examples || [],
         created_at: row.created_at,
         title: { en: row.title_en, my: row.title_my },
         oldMethodTitle: { en: row.old_method_title_en, my: row.old_method_title_my },
@@ -27,8 +28,8 @@ const fromSupabase = (row: any): Tip => {
 interface TipContextType {
   tips: Tip[];
   loading: boolean;
-  addTip: (tip: Omit<Tip, 'created_at'>, file: File | null) => Promise<void>;
-  updateTip: (id: number, tip: Partial<Omit<Tip, 'created_at'>>, file: File | null) => Promise<void>;
+  addTip: (tip: Omit<Tip, 'created_at' | 'id'>, file: File | null) => Promise<Tip>;
+  updateTip: (id: number, tip: Partial<Omit<Tip, 'created_at' | 'id'>>, file: File | null) => Promise<void>;
   deleteTip: (id: number) => Promise<void>;
 }
 
@@ -61,12 +62,13 @@ export const TipProvider = ({ children }: { children: ReactNode }) => {
     fetchTips();
   }, []);
 
-  const addTip = async (tip: Omit<Tip, 'created_at'>, file: File | null) => {
+  const addTip = async (tip: Omit<Tip, 'created_at' | 'id'>, file: File | null) => {
     const newTip = await addTipService(tip, file);
     setTips(prev => [newTip, ...prev]);
+    return newTip;
   };
 
-  const updateTip = async (id: number, tip: Partial<Omit<Tip, 'created_at'>>, file: File | null) => {
+  const updateTip = async (id: number, tip: Partial<Omit<Tip, 'created_at' | 'id'>>, file: File | null) => {
     const updatedTip = await updateTipService(id, tip, file);
     setTips(prev => prev.map(f => f.id === id ? updatedTip : f));
   };
