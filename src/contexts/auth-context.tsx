@@ -39,8 +39,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     getSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const isPasswordRecovery = session?.user?.aud === 'authenticated' && session.user.user_metadata.recovery === true;
+
       setUser(session?.user ?? null);
       setIsAdmin(session?.user?.email === adminEmail);
+
+      // Prevent redirect during password recovery flow
+      if (_event === 'SIGNED_IN' && isPasswordRecovery) {
+        // This is a password recovery session, do not redirect.
+        // We can also clear the recovery metadata from the user if needed, but Supabase handles this.
+        return;
+      }
+      
       if (_event === 'SIGNED_IN' && window.location.pathname === '/login') {
         router.push('/');
       }
