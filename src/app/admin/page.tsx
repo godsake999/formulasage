@@ -28,6 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import BulkFormulaUpload from '@/components/admin/BulkFormulaUpload'; // Adjust path as needed
 
 const initialFormulaState: Omit<Formula, 'created_at'> = {
   id: 0,
@@ -123,7 +124,13 @@ export default function AdminPage() {
     setFormulaFormData(JSON.parse(JSON.stringify(initialFormulaState)));
     setIsEditingFormula(false);
   }
-
+  
+  const handleUploadComplete = () => {
+    // This forces the useFormulas context to reload data if it has a refresh method, 
+    // OR you can just hard reload the page for simplicity:
+    window.location.reload(); 
+    toast({ title: 'Bulk Upload Success', description: 'Formulas have been imported.' });
+};
   const handleSelectTip = (tip: Tip) => setSelectedTip(tip);
   const handleAddNewTip = () => {
     setSelectedTip(null);
@@ -351,7 +358,21 @@ export default function AdminPage() {
             <div className="lg:col-span-4 xl:col-span-3">
             <Card>
                 <CardHeader>
-                    <Button className="w-full" onClick={handleAddNewFormula}><PlusCircle/> Create New Formula</Button>
+                    {/* Inside TabsContent value="formulas" */}
+                    <div className="lg:col-span-4 xl:col-span-3">
+                        <Card>
+                            <CardHeader>
+                                <Button className="w-full" onClick={handleAddNewFormula}><PlusCircle/> Create New Formula</Button>
+                                {/* ... existing search input ... */}
+                            </CardHeader>
+                            <CardContent>
+                                {/* ... existing list ... */}
+                            </CardContent>
+                        </Card>
+
+                        {/* ADD THIS SECTION BELOW THE LIST CARD */}
+                        <BulkFormulaUpload onUploadComplete={handleUploadComplete} />
+                    </div>
                     <div className="relative mt-4">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input placeholder="Search functions..." className="pl-9" value={formulaSearchTerm} onChange={(e) => setFormulaSearchTerm(e.target.value)}/>
