@@ -1,16 +1,16 @@
-
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import type { User, Session } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
   user: User | null;
   isAdmin: boolean;
   loading: boolean;
-  signIn: (password: string) => Promise<any>;
+  // CHANGE 1: Update signature to accept email
+  signIn: (email: string, password: string) => Promise<any>;
   signOut: () => Promise<void>;
 }
 
@@ -25,32 +25,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
   useEffect(() => {
+    // We keep this check to verify ADMIN status, but we don't force login with it anymore
     if (!adminEmail) {
-      console.error("Critical: NEXT_PUBLIC_ADMIN_EMAIL environment variable is not set.");
+      console.warn("Warning: NEXT_PUBLIC_ADMIN_EMAIL environment variable is not set. Admin checks will fail.");
     }
 
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
-      setIsAdmin(session?.user?.email === adminEmail);
+      // Logic remains: Is the logged-in user the admin?
+      setIsAdmin(session?.user?.email === adminEmail); 
       setLoading(false);
     };
     
     getSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      const isPasswordRecovery = session?.user?.aud === 'authenticated' && session.user.user_metadata.recovery === true;
-
       setUser(session?.user ?? null);
       setIsAdmin(session?.user?.email === adminEmail);
-
-      // Prevent redirect during password recovery flow
-      if (_event === 'SIGNED_IN' && isPasswordRecovery) {
-        // This is a password recovery session, do not redirect.
-        // We can also clear the recovery metadata from the user if needed, but Supabase handles this.
-        return;
-      }
-      
       if (_event === 'SIGNED_IN' && window.location.pathname === '/login') {
         router.push('/');
       }
@@ -64,12 +56,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [adminEmail, router]);
 
-  const signIn = async (password: string) => {
-    if (!adminEmail) {
-      throw new Error("Admin email is not configured.");
-    }
+  // CHANGE 2: Update implementation to use the email argument
+  const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: adminEmail,
+      email: email, // Use the user input email
       password,
     });
     if (error) throw error;
